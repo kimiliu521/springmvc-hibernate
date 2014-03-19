@@ -1,11 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.kimi.springmvc-hibernate</groupId>
-  <artifactId>springmvc-hibernate</artifactId>
+  <groupId>com.kimi.forum</groupId>
+  <artifactId>forum</artifactId>
   <packaging>war</packaging>
   <version>0.0.1-SNAPSHOT</version>
-  <name>springmvc-hibernate Maven Webapp</name>
+  <name>forum Maven Webapp</name>
   <url>http://maven.apache.org</url>
   
   <properties>
@@ -125,9 +125,13 @@
 		<artifactId>commons-dbcp</artifactId>
 		<version>1.4</version>
 	</dependency>
-            
+   	<dependency>
+		<groupId>org.apache.commons</groupId>
+		<artifactId>commons-lang3</artifactId>
+		<version>3.1</version>
+	</dependency>
   </dependencies>
   <build>
-    <finalName>springmvc-hibernate</finalName>
+    <finalName>forum</finalName>
   </build>
 </project>
