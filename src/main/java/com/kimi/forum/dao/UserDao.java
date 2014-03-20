@@ -2,8 +2,10 @@ package com.kimi.forum.dao;
 
 import java.util.List;
 
-import com.kimi.forum.domain.User;
+import org.springframework.stereotype.Repository;
 
+import com.kimi.forum.domain.User;
+@Repository
 public class UserDao extends BaseDao<User>{
 	private final String GET_USER_BY_USERNAME = "from User u where u.userName = ?";
 	

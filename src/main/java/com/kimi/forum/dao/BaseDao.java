@@ -9,55 +9,54 @@ import java.util.regex.Pattern;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.orm.hibernate3.SessionFactoryUtils;
 import org.springframework.util.Assert;
 
 public class BaseDao<T> {
 	private Class<T> entityClass;
-	
 	@Autowired
-	private HibernateTemplate hibernateTemplate;
-	
+	private SessionFactory sessionFactory;
 	public BaseDao(){
 		Type genType = getClass().getGenericSuperclass();
 		Type[] params = ((ParameterizedType) genType).getActualTypeArguments();
 		entityClass = (Class)params[0];
 	}
 	public T load (Serializable id) {
-		return (T) getHibernateTemplate().load(entityClass, id);
+		return (T)getSession().load(entityClass, id);
 	}
 	
-	public List<T> loadAll() {
-		return getHibernateTemplate().loadAll(entityClass);
-	}
 	
 	public void save(T entity) {
-		getHibernateTemplate().save(entity);
+		getSession().save(entity);
 	}
 	
 	public void remove(T entity) {
-		getHibernateTemplate().delete(entity);
+		getSession().delete(entity);
 	}
-	
+	public void remove(Serializable id) {
+		getSession().delete(get(id));
+	}
+	public T get(Serializable id) {
+        return (T) getSession().get(this.entityClass, id);
+    }
 	public void update(T entity) {
-		getHibernateTemplate().update(entity);
+		getSession().update(entity);
 	}
 	
-	public List find(String hql) {
-		return getHibernateTemplate().find(hql);
+	public List<T> find(String hql) {
+		return createQuery(hql).list();
 	}
 	
-	public List find(String hql,Object... objects) {
-		return getHibernateTemplate().find(hql, objects);
+	public List<T> find(String hql,Object... objects) {
+		return createQuery(hql,objects).list();
 	}
 	
 	public Page pagedQuery(String hql,int pageNo, int pageSize, Object... values) {
 		Assert.hasText(hql);
 		Assert.isTrue(pageNo >=1 ,"pageNo should start from 1");
 		String countQueryString  = "SELECT COUNT(*) " + removeSelect(removeOrders(hql));
-		List countList = getHibernateTemplate().find(countQueryString, values);
+		List countList = find(countQueryString, values);
 		long totalCount = (Long)countList.get(0);
 		if(totalCount < 1) {
 			return new Page();
@@ -77,8 +76,8 @@ public class BaseDao<T> {
 		}
 		return query;
 	}
-	private Session getSession() {
-		return SessionFactoryUtils.getSession(hibernateTemplate.getSessionFactory(),true);
+	public Session getSession() {
+		return sessionFactory.openSession();
 	}
 	private String removeSelect(String hql) {
 		Assert.hasText(hql);
@@ -96,12 +95,6 @@ public class BaseDao<T> {
 		}
 		m.appendTail(sb);
 		return sb.toString();
-	}
-	public HibernateTemplate getHibernateTemplate() {
-		return hibernateTemplate;
-	}
-	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
-		this.hibernateTemplate = hibernateTemplate;
 	}
 	
 }
